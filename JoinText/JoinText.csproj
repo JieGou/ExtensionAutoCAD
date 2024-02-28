@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,15 +33,15 @@
   <ItemGroup>
     <Reference Include="AcCoreMgd, Version=23.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ObjectARX 2020\inc\AcCoreMgd.dll</HintPath>
+      <HintPath>C:\Program Files\Autodesk\AutoCAD 2020\AcCoreMgd.dll</HintPath>
     </Reference>
     <Reference Include="AcDbMgd, Version=23.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ObjectARX 2020\inc\AcDbMgd.dll</HintPath>
+      <HintPath>C:\Program Files\Autodesk\AutoCAD 2020\AcDbMgd.dll</HintPath>
     </Reference>
     <Reference Include="AcMgd, Version=23.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\ObjectARX 2020\inc\AcMgd.dll</HintPath>
+      <HintPath>C:\Program Files\Autodesk\AutoCAD 2020\AcMgd.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

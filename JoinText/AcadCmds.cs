@@ -44,17 +44,22 @@ namespace RoutingSolid
                     model.BuildRoutingSolid();
                     model.RoutingSolid();
                 }
-                else
+                else//Done 优化:支持直接创建多个独立的图(管网)
                 {
                     // 分别得到各Component的图
                     List<IUndirectedGraph<Node, Connection>> subGraphs = GraphComponentUtils.GetSubComponentGraphs(model.routers, dfs);
-                    foreach (UndirectedGraph<Node, Connection> subGraph in subGraphs)
+                    var width = 20.0;
+                    var height = 20.0;
+                    var thickness = 5.0;
+                    foreach (var undirectedGraph in subGraphs)
                     {
+                        var subGraph = (UndirectedGraph<Node, Connection>)undirectedGraph;
+                        if (subGraph == null || subGraph.EdgeCount < 1) continue;
                         Model submodel = new Model
                         {
                             routers = subGraph
                         };
-                        submodel.BuildProfile();
+                        submodel.BuildProfile(width, height, thickness);
                         submodel.BuildRoutingSolid();
                         submodel.RoutingSolid();
                     }

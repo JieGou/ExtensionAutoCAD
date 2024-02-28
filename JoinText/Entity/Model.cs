@@ -22,6 +22,7 @@ namespace RoutingSolid
         /// 无向图
         /// </summary>
         public UndirectedGraph<Node, Connection> routers;
+
         private List<Solid.SolidEntity> solids;
         private Solid.Profile profile;
 
@@ -316,18 +317,25 @@ namespace RoutingSolid
             return AcadFuncs.GetVec(conn.Target.Position, conn.Source.Position);
         }
 
-        public void BuildProfile()
+        public void BuildProfile(double inputWidth = 0.0, double inputHeight = 0.0, double inputThickness = 0.0)
         {
+            double TOLERANCE = 0.0001;
             //double width = 0.0;
-            if (!AcadFuncs.GetDouble(ref width, "输入宽度:"))
+            if (Math.Abs(inputWidth) < TOLERANCE && !AcadFuncs.GetDouble(ref width, "输入宽度:"))
                 throw new Exception("Cancel process");
+            if (Math.Abs(inputWidth) > TOLERANCE)
+                width = inputWidth;
 
             //double height = 0.0;
-            if (!AcadFuncs.GetDouble(ref height, "输入高度:"))
+            if (Math.Abs(inputHeight) < TOLERANCE && !AcadFuncs.GetDouble(ref height, "输入高度:"))
                 throw new Exception("Cancel process");
+            if (Math.Abs(inputWidth) > TOLERANCE)
+                height = inputHeight;
 
-            if (!AcadFuncs.GetDouble(ref thickness, "输入厚度:"))
+            if (Math.Abs(inputThickness) < TOLERANCE && !AcadFuncs.GetDouble(ref thickness, "输入厚度:"))
                 throw new Exception("Cancel process");
+            if (Math.Abs(inputWidth) > TOLERANCE)
+                thickness = inputThickness;
 
             //AcadGeo.Point3d bp = new AcadGeo.Point3d();
             //while (true)
@@ -378,7 +386,7 @@ namespace RoutingSolid
                 }
             }
         }
-        //TODO 优化:支持直接创建多个独立的图
+
         /// <summary>
         /// 创建无向图模型
         /// </summary>
