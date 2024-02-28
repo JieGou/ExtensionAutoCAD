@@ -9,143 +9,157 @@ using AcadDB = Autodesk.AutoCAD.DatabaseServices;
 
 namespace RoutingSolid.Solid
 {
-	class Profile
-	{
-		private AcadGeo.Point3d base_point;
-		public AcadGeo.Point3d BasePoint
-		{
-			get { return base_point; }
-			set { base_point = value; }
-		}
-		private double width;
-		public double Width
-		{
-			get { return width; }
-			set { width = value; }
-		}
+    /// <summary>
+    /// 轮廓
+    /// </summary>
+    internal class Profile
+    {
+        private AcadGeo.Point3d base_point;
 
-		private double height;
-		public double Height
-		{
-			get { return height; }
-			set { height = value; }
-		}
+        public AcadGeo.Point3d BasePoint
+        {
+            get { return base_point; }
+            set { base_point = value; }
+        }
 
-		private double thickness;
-		public double Thickness
-		{
-			set { thickness = value; }
-		}
+        private double width;
 
-		private AcadGeo.Vector3d up_vector;
-		public AcadGeo.Vector3d UpVector
-		{
-			get { return up_vector; }
-			set { up_vector = value; }
-		}
-		private AcadGeo.Vector3d normal_vector;
-		public AcadGeo.Vector3d NormalVector
-		{
-			get { return normal_vector; }
-			set { normal_vector = value; }
-		}
+        public double Width
+        {
+            get { return width; }
+            set { width = value; }
+        }
 
-		public Profile()
-		{
-			base_point = new AcadGeo.Point3d();
-			width = 0.0;
-			height = 0.0;
-			thickness = 0.0;
-			up_vector = new AcadGeo.Vector3d();
-			normal_vector = new AcadGeo.Vector3d();
-		}
+        private double height;
 
-		public Profile(Profile p)
-		{
-			base_point = p.base_point;
-			width = p.width;
-			height = p.height;
-			thickness = p.thickness;
-			up_vector = p.up_vector;
-			normal_vector = p.normal_vector;
-		}
+        public double Height
+        {
+            get { return height; }
+            set { height = value; }
+        }
 
-		public void Translate(AcadGeo.Vector3d vec)
-		{
-			base_point += vec;
-		}
+        private double thickness;
 
-		public void Rotate(AcadGeo.Vector3d vec)
-		{
-			AcadGeo.Vector3d axe = vec.CrossProduct(normal_vector);
-			axe = axe.GetNormal();
-			if (axe.IsEqualTo(new AcadGeo.Vector3d(0.0, 0.0, 0.0)))
-				return;
+        public double Thickness
+        {
+            set { thickness = value; }
+        }
 
-			double angle = normal_vector.GetAngleTo(vec, axe);
-			if (angle > AcadFuncs.kPI)
-				angle -= AcadFuncs.kPI;
-			if (angle > AcadFuncs.kPI * 0.5)
-				angle -= AcadFuncs.kPI;
-			AcadGeo.Tolerance tol = new AcadGeo.Tolerance(0.01, 0.01);
-			if (!up_vector.IsParallelTo(axe, tol))
-				up_vector = up_vector.RotateBy(angle, axe);
-			if (!normal_vector.IsParallelTo(axe, tol))
-				normal_vector = normal_vector.RotateBy(angle, axe);
-		}
+        private AcadGeo.Vector3d up_vector;
 
-		public List<AcadDB.Region> GetRegions()
-		{
-			List<AcadDB.Region> regions = new List<AcadDB.Region>();
+        public AcadGeo.Vector3d UpVector
+        {
+            get { return up_vector; }
+            set { up_vector = value; }
+        }
 
-			AcadGeo.Vector3d tmp_vec = up_vector.CrossProduct(normal_vector);
+        private AcadGeo.Vector3d normal_vector;
 
-			AcadDB.DBObjectCollection objs = new AcadDB.DBObjectCollection();
+        /// <summary>
+        /// 轮廓(截面法向)方向
+        /// </summary>
+        public AcadGeo.Vector3d NormalVector
+        {
+            get { return normal_vector; }
+            set { normal_vector = value; }
+        }
 
-			AcadGeo.Vector3d hf = up_vector * height * 0.5;
-			AcadGeo.Vector3d wf = tmp_vec * width * 0.5;
-			objs.Add(new AcadDB.Line(base_point + hf + wf, base_point + hf - wf));
-			objs.Add(new AcadDB.Line(base_point + hf - wf, base_point - hf - wf));
-			objs.Add(new AcadDB.Line(base_point - hf - wf, base_point - hf + wf));
-			objs.Add(new AcadDB.Line(base_point - hf + wf, base_point + hf + wf));
+        public Profile()
+        {
+            base_point = new AcadGeo.Point3d();
+            width = 0.0;
+            height = 0.0;
+            thickness = 0.0;
+            up_vector = new AcadGeo.Vector3d();
+            normal_vector = new AcadGeo.Vector3d();
+        }
 
-			AcadDB.DBObjectCollection regs = AcadDB.Region.CreateFromCurves(objs);
-			foreach(var reg in regs)
-			{
-				if (reg is AcadDB.Region)
-					regions.Add(reg as AcadDB.Region);
-			}
+        public Profile(Profile p)
+        {
+            base_point = p.base_point;
+            width = p.width;
+            height = p.height;
+            thickness = p.thickness;
+            up_vector = p.up_vector;
+            normal_vector = p.normal_vector;
+        }
 
-			return regions;
-		}
+        public void Translate(AcadGeo.Vector3d vec)
+        {
+            base_point += vec;
+        }
 
-		public List<AcadDB.Region> GetSubRegions()
-		{
-			List<AcadDB.Region> regions = new List<AcadDB.Region>();
+        public void Rotate(AcadGeo.Vector3d vec)
+        {
+            AcadGeo.Vector3d axe = vec.CrossProduct(normal_vector);
+            axe = axe.GetNormal();
+            if (axe.IsEqualTo(new AcadGeo.Vector3d(0.0, 0.0, 0.0)))
+                return;
 
-			AcadGeo.Vector3d tmp_vec = up_vector.CrossProduct(normal_vector);
+            double angle = normal_vector.GetAngleTo(vec, axe);
+            if (angle > AcadFuncs.kPI)
+                angle -= AcadFuncs.kPI;
+            if (angle > AcadFuncs.kPI * 0.5)
+                angle -= AcadFuncs.kPI;
+            AcadGeo.Tolerance tol = new AcadGeo.Tolerance(0.01, 0.01);
+            if (!up_vector.IsParallelTo(axe, tol))
+                up_vector = up_vector.RotateBy(angle, axe);
+            if (!normal_vector.IsParallelTo(axe, tol))
+                normal_vector = normal_vector.RotateBy(angle, axe);
+        }
 
-			AcadDB.DBObjectCollection objs = new AcadDB.DBObjectCollection();
+        public List<AcadDB.Region> GetRegions()
+        {
+            List<AcadDB.Region> regions = new List<AcadDB.Region>();
 
-			AcadGeo.Vector3d hf = up_vector * height * 0.5;
-			AcadGeo.Vector3d wf = tmp_vec * (width * 0.5 - thickness);
-			AcadGeo.Vector3d tf = up_vector * thickness;
-			objs.Add(new AcadDB.Line(base_point + hf + wf, base_point + hf - wf));
-			objs.Add(new AcadDB.Line(base_point + hf - wf, base_point - hf - wf + tf));
-			objs.Add(new AcadDB.Line(base_point - hf - wf + tf, base_point - hf + wf + tf));
-			objs.Add(new AcadDB.Line(base_point - hf + wf + tf, base_point + hf + wf));
+            AcadGeo.Vector3d tmp_vec = up_vector.CrossProduct(normal_vector);
 
-			{
-				AcadDB.DBObjectCollection regs = AcadDB.Region.CreateFromCurves(objs);
+            AcadDB.DBObjectCollection objs = new AcadDB.DBObjectCollection();
 
-				foreach (var reg in regs)
-				{
-					if (reg is AcadDB.Region)
-						regions.Add(reg as AcadDB.Region);
-				}
-			}
+            AcadGeo.Vector3d hf = up_vector * height * 0.5;
+            AcadGeo.Vector3d wf = tmp_vec * width * 0.5;
+            objs.Add(new AcadDB.Line(base_point + hf + wf, base_point + hf - wf));
+            objs.Add(new AcadDB.Line(base_point + hf - wf, base_point - hf - wf));
+            objs.Add(new AcadDB.Line(base_point - hf - wf, base_point - hf + wf));
+            objs.Add(new AcadDB.Line(base_point - hf + wf, base_point + hf + wf));
 
-			return regions;
-		}
-	}
+            AcadDB.DBObjectCollection regs = AcadDB.Region.CreateFromCurves(objs);
+            foreach (var reg in regs)
+            {
+                if (reg is AcadDB.Region)
+                    regions.Add(reg as AcadDB.Region);
+            }
+
+            return regions;
+        }
+
+        public List<AcadDB.Region> GetSubRegions()
+        {
+            List<AcadDB.Region> regions = new List<AcadDB.Region>();
+
+            AcadGeo.Vector3d tmp_vec = up_vector.CrossProduct(normal_vector);
+
+            AcadDB.DBObjectCollection objs = new AcadDB.DBObjectCollection();
+
+            AcadGeo.Vector3d hf = up_vector * height * 0.5;
+            AcadGeo.Vector3d wf = tmp_vec * (width * 0.5 - thickness);
+            AcadGeo.Vector3d tf = up_vector * thickness;
+            objs.Add(new AcadDB.Line(base_point + hf + wf, base_point + hf - wf));
+            objs.Add(new AcadDB.Line(base_point + hf - wf, base_point - hf - wf + tf));
+            objs.Add(new AcadDB.Line(base_point - hf - wf + tf, base_point - hf + wf + tf));
+            objs.Add(new AcadDB.Line(base_point - hf + wf + tf, base_point + hf + wf));
+
+            {
+                AcadDB.DBObjectCollection regs = AcadDB.Region.CreateFromCurves(objs);
+
+                foreach (var reg in regs)
+                {
+                    if (reg is AcadDB.Region)
+                        regions.Add(reg as AcadDB.Region);
+                }
+            }
+
+            return regions;
+        }
+    }
 }
