@@ -10,12 +10,12 @@ namespace RoutingSolid
         /// <summary>
         /// 得到每部分Component的"子图"
         /// </summary>
-        /// <typeparam name="TVertex"></typeparam>
-        /// <typeparam name="TEdge"></typeparam>
-        /// <param name="g"></param>
-        /// <param name="dfs"></param>
+        /// <typeparam name="TVertex">节点类型</typeparam>
+        /// <typeparam name="TEdge">边类型</typeparam>
+        /// <param name="g">无向图</param>
+        /// <param name="dfs">连接图算法</param>
         /// <returns></returns>
-        public static List<IUndirectedGraph<TVertex, TEdge>> GetSubComponentGraphs<TVertex, TEdge>(IUndirectedGraph<TVertex, TEdge> g, ConnectedComponentsAlgorithm<TVertex, TEdge> dfs) where TEdge : IEdge<TVertex>
+        public static List<IUndirectedGraph<TVertex, TEdge>> GetSubComponentGraphs<TVertex, TEdge>(this IUndirectedGraph<TVertex, TEdge> g, ConnectedComponentsAlgorithm<TVertex, TEdge> dfs) where TEdge : IEdge<TVertex>
         {
             //先得到顶点，找到相邻边，再重新构造图
             var subGraphs = new List<IUndirectedGraph<TVertex, TEdge>>();
@@ -46,7 +46,7 @@ namespace RoutingSolid
                 }
                 else if (subGraphVertexs.Count > 1)
                 {
-                    var subEdges = GetEdges(g, subGraphVertexs);
+                    var subEdges = g.GetEdges(subGraphVertexs);
                     if (subEdges.Count > 0)
                     {
                         var subGraph = subEdges.ToUndirectedGraph<TVertex, TEdge>();
@@ -60,12 +60,12 @@ namespace RoutingSolid
         /// <summary>
         /// 获取连接的边列表
         /// </summary>
-        /// <typeparam name="TVertex"></typeparam>
-        /// <typeparam name="TEdge"></typeparam>
-        /// <param name="g"></param>
-        /// <param name="subGraphVertexs"></param>
+        /// <typeparam name="TVertex">节点类型</typeparam>
+        /// <typeparam name="TEdge">边类型</typeparam>
+        /// <param name="g">无向图</param>
+        /// <param name="subGraphVertexs">component(子图)包含的节点列表</param>
         /// <returns></returns>
-        private static List<TEdge> GetEdges<TVertex, TEdge>(IUndirectedGraph<TVertex, TEdge> g, List<TVertex> subGraphVertexs) where TEdge : IEdge<TVertex>
+        public static List<TEdge> GetEdges<TVertex, TEdge>(this IUndirectedGraph<TVertex, TEdge> g, List<TVertex> subGraphVertexs) where TEdge : IEdge<TVertex>
         {
             var edges = new List<TEdge>();
             var algo = new UndirectedBreadthFirstSearchAlgorithm<TVertex, TEdge>(g);

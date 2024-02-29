@@ -47,7 +47,7 @@ namespace RoutingSolid
                 else//Done 优化:支持直接创建多个独立的图(管网)
                 {
                     // 分别得到各Component的图
-                    List<IUndirectedGraph<Node, Connection>> subGraphs = GraphComponentUtils.GetSubComponentGraphs(model.routers, dfs);
+                    List<IUndirectedGraph<Node, Connection>> subGraphs = model.routers.GetSubComponentGraphs(dfs);
                     var width = 20.0;
                     var height = 20.0;
                     var thickness = 5.0;
